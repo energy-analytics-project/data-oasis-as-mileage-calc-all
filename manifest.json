@@ -1,45 +1,26 @@
 {
     "company": "Enviro Software Solutions, LLC",
     "ddl_create": [
-        "CREATE TABLE IF NOT EXISTS",
-        "    oasis ( ",
-        "        timedate                 STRING,",
-        "        timedate_posix           INTEGER,",
-        "        source                   STRING,",
-        "        version                  STRING,",
-        "        name                     STRING,",
-        "        system                   STRING,",
-        "        tz                       STRING,",
-        "        report                   STRING,",
-        "        uom                      STRING,",
-        "        interval                 STRING,",
-        "        sec_per_interval         INTEGER,",
-        "        data_item                STRING,",
-        "        resource_name            STRING,",
-        "        opr_date                 STRING,",
-        "        opr_date_8601            STRING,",
-        "        interval_num             INTEGER,",
-        "        interval_start_gmt       STRING,",
-        "        interval_start_posix     INTEGER,",
-        "        interval_end_gmt         STRING,",
-        "        interval_end_posix       INTEGER,",
-        "        value                    NUMBER,",
-        "        PRIMARY KEY (",
-        "                        source                 ,",
-        "                        name                   ,",
-        "                        system                 ,",
-        "                        tz                     ,",
-        "                        report                 ,",
-        "                        uom                    ,",
-        "                        data_item              ,",
-        "                        resource_name          ,",
-        "                        interval_num           ,",
-        "                        interval_start_posix   ,",
-        "                        interval_end_posix       ",
-        "                    )",
-        "        );"
+        "CREATE TABLE IF NOT EXISTS oasisreport (xmlns TEXT, PRIMARY KEY (xmlns));",
+        "CREATE TABLE IF NOT EXISTS messageheader (timedate TEXT, source TEXT, version TEXT, oasisreport_xmlns TEXT, FOREIGN KEY (oasisreport_xmlns) REFERENCES oasisreport(xmlns), PRIMARY KEY (timedate, source, version));",
+        "CREATE TABLE IF NOT EXISTS messagepayload (id TEXT, oasisreport_xmlns TEXT, FOREIGN KEY (oasisreport_xmlns) REFERENCES oasisreport(xmlns), PRIMARY KEY (id));",
+        "CREATE TABLE IF NOT EXISTS rto (name TEXT, messagepayload_id TEXT, FOREIGN KEY (messagepayload_id) REFERENCES messagepayload(id), PRIMARY KEY (name));",
+        "CREATE TABLE IF NOT EXISTS report_item (id TEXT, rto_name TEXT, FOREIGN KEY (rto_name) REFERENCES rto(name), PRIMARY KEY (id));",
+        "CREATE TABLE IF NOT EXISTS report_header (tz TEXT, interval TEXT, uom TEXT, sec_per_interval INTEGER, system TEXT, report TEXT, report_item_id TEXT, FOREIGN KEY (report_item_id) REFERENCES report_item(id), PRIMARY KEY (tz, interval, uom, sec_per_interval, system, report));",
+        "CREATE TABLE IF NOT EXISTS report_data (interval_num INTEGER, interval_start_gmt TEXT, opr_date TEXT, resource_name TEXT, interval_end_gmt TEXT, data_item TEXT, value REAL, report_item_id TEXT, FOREIGN KEY (report_item_id) REFERENCES report_item(id), PRIMARY KEY (interval_num, interval_start_gmt, opr_date, resource_name, interval_end_gmt, data_item, value));",
+        "CREATE TABLE IF NOT EXISTS disclaimer_item (disclaimer TEXT, rto_name TEXT, FOREIGN KEY (rto_name) REFERENCES rto(name), PRIMARY KEY (disclaimer));"
     ],
-    "description": "TODO: add a description of this data source here",
+    "delay": "5",
+    "description": [
+        "From: Interface Specification for OASIS 2019 Independent Release Version: 5.1.8 2/15/2019",
+        "Lists system performance accuracy, average",
+        "Instructed Mileage (MW), and system Mileage",
+        "multiplier RMD_SYS_MIL_MUL System Mileage Multiplier",
+        "for regulation mileage down",
+        "data from the prior seven days for each hour of",
+        "a trading day."
+    ],
+    "download_delay_secs": 5,
     "email": "pub+github@zwrob.com",
     "maintainer": "Todd Greenwood-Geer",
     "name": "data-oasis-as-mileage-calc-all",
@@ -93,7 +74,7 @@
         "    );"
     ],
     "sql_queries": [
-        "TODO: add sql for each unique report query"
+        "select value, uom, interval_start_posix, data_item, resource_name from oasis"
     ],
     "start_date": [
         2013,
@@ -101,5 +82,13 @@
         1
     ],
     "url": "http://oasis.caiso.com/oasisapi/SingleZip?queryname=AS_MILEAGE_CALC&anc_type=ALL&startdatetime=_START_T07:00-0000&enddatetime=_END_T07:00-0000&version=1",
+    "variants": [
+        "RMD_AVG_MIL : Average Instructed Mileage for regulation mileage down",
+        "RMD_SYS_MIL_MUL : System Mileage Multiplier for regulation mileage down",
+        "RMD_SYS_PERF_ACC : System Performance Accuracy for regulation mileage up",
+        "RMU_AVG_MIL : Average Instructed Mileage for regulation mileage up",
+        "RMU_SYS_MIL_MUL : System Mileage Multiplier for regulation mileage up",
+        "RMU_SYS_PERF_ACC : System Performance Accuracy for regulation mileage up"
+    ],
     "xml_namespace": "http://www.caiso.com/soa/OASISReport_v1.xsd"
 }
