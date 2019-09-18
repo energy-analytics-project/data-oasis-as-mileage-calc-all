@@ -1,15 +1,5 @@
 {
     "company": "Enviro Software Solutions, LLC",
-    "ddl_create": [
-        "CREATE TABLE IF NOT EXISTS oasisreport (xmlns TEXT, PRIMARY KEY (xmlns));",
-        "CREATE TABLE IF NOT EXISTS messageheader (timedate TEXT, source TEXT, version TEXT, oasisreport_xmlns TEXT, FOREIGN KEY (oasisreport_xmlns) REFERENCES oasisreport(xmlns), PRIMARY KEY (timedate, source, version));",
-        "CREATE TABLE IF NOT EXISTS messagepayload (id TEXT, oasisreport_xmlns TEXT, FOREIGN KEY (oasisreport_xmlns) REFERENCES oasisreport(xmlns), PRIMARY KEY (id));",
-        "CREATE TABLE IF NOT EXISTS rto (name TEXT, messagepayload_id TEXT, FOREIGN KEY (messagepayload_id) REFERENCES messagepayload(id), PRIMARY KEY (name));",
-        "CREATE TABLE IF NOT EXISTS report_item (id TEXT, rto_name TEXT, FOREIGN KEY (rto_name) REFERENCES rto(name), PRIMARY KEY (id));",
-        "CREATE TABLE IF NOT EXISTS report_header (tz TEXT, interval TEXT, uom TEXT, sec_per_interval INTEGER, system TEXT, report TEXT, report_item_id TEXT, FOREIGN KEY (report_item_id) REFERENCES report_item(id), PRIMARY KEY (tz, interval, uom, sec_per_interval, system, report));",
-        "CREATE TABLE IF NOT EXISTS report_data (interval_num INTEGER, interval_start_gmt TEXT, opr_date TEXT, resource_name TEXT, interval_end_gmt TEXT, data_item TEXT, value REAL, report_item_id TEXT, FOREIGN KEY (report_item_id) REFERENCES report_item(id), PRIMARY KEY (interval_num, interval_start_gmt, opr_date, resource_name, interval_end_gmt, data_item, value));",
-        "CREATE TABLE IF NOT EXISTS disclaimer_item (disclaimer TEXT, rto_name TEXT, FOREIGN KEY (rto_name) REFERENCES rto(name), PRIMARY KEY (disclaimer));"
-    ],
     "delay": "5",
     "description": [
         "From: Interface Specification for OASIS 2019 Independent Release Version: 5.1.8 2/15/2019",
@@ -25,57 +15,6 @@
     "maintainer": "Todd Greenwood-Geer",
     "name": "data-oasis-as-mileage-calc-all",
     "repo": "https://github.com/energy-analytics-project/data-oasis-as-mileage-calc-all.git",
-    "sql_insert": [
-        "INSERT INTO oasis (",
-        "        timedate                 ,",
-        "        timedate_posix           ,",
-        "        source                   ,",
-        "        version                  ,",
-        "        name                     ,",
-        "        system                   ,",
-        "        tz                       ,",
-        "        report                   ,",
-        "        uom                      ,",
-        "        interval                 ,",
-        "        sec_per_interval         ,",
-        "        data_item                ,",
-        "        resource_name            ,",
-        "        opr_date                 ,",
-        "        opr_date_8601            ,",
-        "        interval_num             ,",
-        "        interval_start_gmt       ,",
-        "        interval_start_posix     ,",
-        "        interval_end_gmt         ,",
-        "        interval_end_posix       ,",
-        "        value                    ",
-        "        )",
-        "VALUES (",
-        "        :timedate                 ,",
-        "        :timedate_posix           ,",
-        "        :source                   ,",
-        "        :version                  ,",
-        "        :name                     ,",
-        "        :system                   ,",
-        "        :tz                       ,",
-        "        :report                   ,",
-        "        :uom                      ,",
-        "        :interval                 ,",
-        "        :sec_per_interval         ,",
-        "        :data_item                ,",
-        "        :resource_name            ,",
-        "        :opr_date                 ,",
-        "        :opr_date_8601            ,",
-        "        :interval_num             ,",
-        "        :interval_start_gmt       ,",
-        "        :interval_start_posix     ,",
-        "        :interval_end_gmt         ,",
-        "        :interval_end_posix       ,",
-        "        :value                    ",
-        "    );"
-    ],
-    "sql_queries": [
-        "select value, uom, interval_start_posix, data_item, resource_name from oasis"
-    ],
     "start_date": [
         2013,
         1,
@@ -89,6 +28,5 @@
         "RMU_AVG_MIL : Average Instructed Mileage for regulation mileage up",
         "RMU_SYS_MIL_MUL : System Mileage Multiplier for regulation mileage up",
         "RMU_SYS_PERF_ACC : System Performance Accuracy for regulation mileage up"
-    ],
-    "xml_namespace": "http://www.caiso.com/soa/OASISReport_v1.xsd"
+    ]
 }
